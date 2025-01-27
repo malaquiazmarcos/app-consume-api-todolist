@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Todas las tareas{% endblock %}
+
+{% block content %}
+    <h1>Todas las tareas:</h1>
+    {% for tarea in tareas %}
+        <ul>
+            <li>{{ tarea }}</li>
+            <a href="{% url 'editar_tareas_view' tarea.id %}">Editar</a>
+            <a href="{% url 'eliminar_tarea_view' tarea.id %}">Eliminar</a>
+        </ul>
+    {% endfor %}
+{% endblock %}
