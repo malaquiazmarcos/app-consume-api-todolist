@@ -8,7 +8,7 @@ def index(request):
 
 def todolist_view(request): 
     if request.method == 'POST':
-        form = TodoListForm(request.POST)
+        form = TodoListForm(request.POST)  
         if form.is_valid():
             title = form.cleaned_data['titulo']
             description = form.cleaned_data['descripcion']
@@ -20,20 +20,13 @@ def todolist_view(request):
                 'completed':completed
             }
 
-            print(f' aca se imprime la data {data}')
-
             api_url = 'http://127.0.0.1:8001/api/tareas/'  # URL del endpoint de la API
             response = requests.post(api_url, json=data)  # solicitud GET a la API
 
-            print(response.status_code)  # Debería ser 400
-            print(response.json())  # Imprime el mensaje de error
-
-
             if response.status_code == 201:
-                return redirect('envio_exitoso_view')
+                return redirect('listar_tareas_view')
             else:
                 print('ERROR!')
-
         else:
             print(form.errors)
     else: 
@@ -41,25 +34,16 @@ def todolist_view(request):
 
     return render(request, 'a_formularios/todolist.html', {'form':form})
 
-
-def envio_exitoso_view(request):
-
-    return render(request, 'a_formularios/enviado.html')
-
-
 def listar_tareas_view(request):
     api_url = 'http://127.0.0.1:8001/api/tareas/'  # URL del endpoint de la API
-
     response = requests.get(api_url)  # solicitud GET a la API
 
     if response.status_code == 200:
-        
-        tareas = response.json()  # Convierte respuesta JSON en un diccionario de Python
+        tareas = response.json()  # convierte respuesta JSON en diccionario de Python
         
         return render(request, 'a_formularios/listar_tareas.html', {'tareas':tareas})
     else:
         print('Ha ocurrido un error!')
-
 
 def editar_tareas_view(request, id):
     api_url = f'http://127.0.0.1:8001/api/tareas/{id}/'  # URL del endpoint de la API
@@ -68,7 +52,7 @@ def editar_tareas_view(request, id):
     if response.status_code != 200:
         print('Error')
 
-    tarea = response.json()
+    tarea = response.json()  # convierte respuesta JSON en diccionario de Python
 
     if request.method == 'POST':
         form = TodoListForm(request.POST)
@@ -83,13 +67,16 @@ def editar_tareas_view(request, id):
                 'completed':completed
             }
 
-            response = requests.put(api_url, json=data)
+            response = requests.put(api_url, json=data)  # solicitud PUT a la API
+
             if response.status_code == 200:
                 print('Se ha editado con exito!')
-                return redirect('listar_tareas')
+
+                return redirect('listar_tareas_view')
             else:
                 print('Ha ocurrido un error!')
     else:
+        # Prellenar el formulario con los datos actuales de la tarea
         form = TodoListForm(initial={
             'titulo': tarea['title'],
             'descripcion': tarea['description'],
@@ -101,12 +88,11 @@ def editar_tareas_view(request, id):
         'tarea':tarea,
     })
 
-
 def eliminar_tarea_view(request, id):
     api_url = f'http://127.0.0.1:8001/api/tareas/{id}/'  # URL del endpoint de la API
-    response = requests.delete(api_url)
+    response = requests.delete(api_url)  # solicitud DELETE a la API
 
-    if response.status_code == 204:
+    if response.status_code == 204:  # 204 es "Sin contenido" (se proceso correctamente)
         return redirect('listar_tareas_view')
     else:
         print('Ha ocurrido un error!')

@@ -7,9 +7,12 @@
 </head>
 <body>
     {% block content %}
+
         <h1>Inicio</h1>
 
+        <a href="{% url 'todolist_view' %}">Hacer una tarea</a>
         <a href="{% url 'listar_tareas_view' %}">Todas las tareas</a>
+        
     {% endblock %}
 </body>
 </html>
